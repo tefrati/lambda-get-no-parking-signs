@@ -1,5 +1,5 @@
 "use strict"
-const MongoClient = require("mongodb").MongoClient;
+const MongoClient = require("mongodb").MongoClient
 
 const insertCurrentSigns = async (signs) => {
 	let client
@@ -15,6 +15,6 @@ const insertCurrentSigns = async (signs) => {
 	finally {
 		client.close()
 	}
-};
+}
 
 module.exports = {insertCurrentSigns}
