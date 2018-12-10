@@ -26,8 +26,6 @@ provider:
 #  region: us-east-1
 
 functions:
-  hello:
-    handler: handler.hello
   getNoParkingSigns:
     handler: handler.getNoParkingSigns # point to exported getNoParkingSigns function in handler.js
     events:
