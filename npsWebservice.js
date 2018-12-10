@@ -25,6 +25,3 @@ const getCurrentSigns = async () => {
 
 
 module.exports = {getCurrentSigns}
-
-"http://secure.globalcips.net/HpuWS/Hpaservice.asmx/GetCurrentParkingSignsPK?aLicKey=e5dfe7f8-7892-402d-8d1a-da91d1f83326&sFieldName=DatePosted"
-"http://secure.caryltech.com/HpaWS/Hpaservice.asmx/GetCurrentParkingSignsPK?aLicKey=e5dfe7f8-7892-402d-8d1a-da91d1f83326&sFieldName=DatePosted"
