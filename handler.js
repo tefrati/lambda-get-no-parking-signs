@@ -12,7 +12,7 @@ module.exports.getNoParkingSigns = async (event, context, callback) => {
 		callback(null, {
 			statusCode: 200,
 			headers: { "Content-Type": "text/plain" },
-			body: "Curretn and future signs fetched and inserted"
+			body: "Current and future signs fetched and inserted"
 		})
 
 	}
