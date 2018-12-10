@@ -2,9 +2,8 @@
 
 var rp = require("request-promise")
 var convert = require("xml-js")
-const API_URL = process.env.API_URL
-    
-const getCurrentSigns = async () => {
+	
+const getSigns= async (apiUrl) => {
 	try {
 		console.log("NoParkingSignsWS.call: Now calling web service")
         
@@ -12,7 +11,7 @@ const getCurrentSigns = async () => {
 			"User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36"
 		}
 
-		let result =  await rp({url: API_URL, headers: headers})
+		let result =  await rp({url: apiUrl, headers: headers})
 		if (result.startsWith("<?xml version")) {
 			let json =  convert.xml2js(result, {compact: true, spaces: 4}).ArrayOfParkingSign.ParkingSign
 			let jsonResult = []
@@ -41,5 +40,12 @@ const getCurrentSigns = async () => {
 	}
 }
 
+const getCurrentSigns = async () => {
+	return await getSigns(process.env.CURRENT_API_URL)
+}
 
-module.exports = {getCurrentSigns}
+const getFutureSigns = async () => {
+	return await getSigns(process.env.FUTURE_API_URL)
+}
+
+module.exports = {getCurrentSigns, getFutureSigns}
