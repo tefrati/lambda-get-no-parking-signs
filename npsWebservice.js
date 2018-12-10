@@ -2,7 +2,6 @@
 
 var rp = require("request-promise")
 var convert = require("xml-js")
-const LICENSE_KEY = process.env.A_LIC_KEY
 const API_URL = process.env.API_URL
     
 const getCurrentSigns = async () => {
@@ -14,8 +13,27 @@ const getCurrentSigns = async () => {
 		}
 
 		let result =  await rp({url: API_URL, headers: headers})
-		console.log(`a result was returned: ${result}`)       
-		return convert.xml2js(result, {compact: true, spaces: 4}).ArrayOfParkingSign.ParkingSign
+		if (result.startsWith("<?xml version")) {
+			let json =  convert.xml2js(result, {compact: true, spaces: 4}).ArrayOfParkingSign.ParkingSign
+			let jsonResult = []
+			for (let parkingSign of json) {
+				let psJson = {}
+				for (let property in parkingSign) {
+					let value = parkingSign[property]._text
+					if (property!=="woZipCode" && property!=="woPhoneNumber") { 
+						if (!value) value = null
+						else if (value==="true") value = true
+						else if (value==="false") value = false
+						else if (!isNaN(value)) value = Number(value)
+					}
+					if (property.startsWith("wo")) property = property[2].toLowerCase() + property.substring(3)
+					psJson[property] = value
+				}
+				jsonResult.push(psJson)
+			}
+			return jsonResult
+		}
+		return result
 	}
 	catch( error ) {
 		console.log(` NoParkingSignsWS.call caught en error ${error.statusCode}, ${error.name}`)
