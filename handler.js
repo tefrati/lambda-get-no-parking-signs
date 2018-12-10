@@ -1,22 +1,18 @@
 "use strict"
 
 require("dotenv").config()
-const {getCurrentSigns} = require("./npsWebservice")
-const {insertCurrentSigns} = require("./db")
+const {getCurrentSigns, getFutureSigns} = require("./npsWebservice")
+const {insertSigns} = require("./db")
 
 module.exports.getNoParkingSigns = async (event, context, callback) => {
 	try {
 		let currentSigns = await getCurrentSigns()
-		console.log(`current signs (in JSON): ${JSON.stringify(currentSigns)}`)
-		let message = `Got ${currentSigns.length} signs`
-		if ( currentSigns.length > 0 ) {
-			await insertCurrentSigns(currentSigns)
-			message = "Signes fetched and inserted to DB"
-		}
+		let futureSigns = await getFutureSigns()
+		await insertSigns(currentSigns, futureSigns)
 		callback(null, {
 			statusCode: 200,
 			headers: { "Content-Type": "text/plain" },
-			body: message
+			body: "Curretn and future signs fetched and inserted"
 		})
 
 	}
