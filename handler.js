@@ -4,10 +4,28 @@ require("dotenv").config()
 const {getCurrentSigns, getFutureSigns} = require("./npsWebservice")
 const {insertSigns} = require("./db")
 
+const processSigns = (signs) => {
+	let re = /[^0-9- ][\w ']*/
+	signs.forEach(sign => {
+		if (!sign.addressStreetName) {
+			let result = re.exec(sign.fullAddress)
+			if (result) {
+				sign.addressStreetName = result[0]
+				console.log(`street ${sign.addressStreetName} was found in ${sign.fullAddress}`)
+			}
+			else {
+				console.error(`no street was found in ${sign.fullAddress}`)
+			}
+		}
+	})
+}
+
 module.exports.getNoParkingSigns = async (event, context, callback) => {
 	try {
 		let currentSigns = await getCurrentSigns()
 		let futureSigns = await getFutureSigns()
+		processSigns(currentSigns)
+		processSigns(futureSigns)
 		await insertSigns(currentSigns, futureSigns)
 		callback(null, {
 			statusCode: 200,
