@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Lambda Function
+
+  Triggered on work days, to collect Hoboken Temporary No Parking (TNP) signs
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 60
+    Environment:
+      Variables:
+        DB_CONNECTION: mongodb+srv://tefrati:harZKXVH27B@cluster0-jpnhu.mongodb.net
+        HobokenParking: HobokenParking
+        DB_CURRENT_LOCATION_COLLECTION: currentSignsLocation
+        DB_FUTURE_LOCATION_COLLECTION: futureSignsLocation
+        CURRENT_API_URL: http://secure.globalcips.net/HpuWS/Hpaservice.asmx/GetCurrentParkingSignsPK?aLicKey=e5dfe7f8-7892-402d-8d1a-da91d1f83326&sFieldName=sContactPerson
+        FUTURE_API_URL: http://secure.globalcips.net/HpuWS/Hpaservice.asmx/GetFutureParkingSignsPK?aLicKey=e5dfe7f8-7892-402d-8d1a-da91d1f83326&sFieldName=sContactPerson
+
+
+Resources:
+  NoParkingSigns:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./
+      Handler: handler.getNoParkingSigns
+      Runtime: nodejs10.x
+      Events:
+        TNP Fetch:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 14 * * MON-FRI *) # in UTC, for GMT+4 (America/New York) it's 10am
+            Name: TNP-workday=schedule
+            Description: Fetching TNP every workday
+            Enabled: True
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /api
+            Method: get
+
+Outputs:
+  EatingHabitsunction:
+    Description: "No Parking Signs Function ARN"
+    Value: !GetAtt NoParkingSigns.Arn
